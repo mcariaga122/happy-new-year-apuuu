@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ❤️</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Stars */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* Screens */
+.screen {
+    display: none;
+    text-align: center;
+    z-index: 10;
+    padding: 20px;
+    max-width: 600px;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+.prompt-text {
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    text-shadow: 0 0 20px rgba(255,192,203,0.5);
+    margin-bottom: 30px;
+}
+
+.button {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 10px;
+    box-shadow: 0 5px 20px rgba(255,105,180,0.4);
+}
+
+.button.secondary {
+    background: linear-gradient(135deg, #daa520, #ffd700);
+}
+
+/* Message */
+.message {
+    color: #fff;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    text-shadow: 0 0 20px rgba(255,192,203,0.5);
+    min-height: 220px;
+}
+
+/* Happy New Year */
+.newyear {
+    color: #ffd700;
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 0 0 30px rgba(255,215,0,0.8);
+    opacity: 0;
+    margin-top: 30px;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Glow */
+.glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: pulse 4s infinite;
+}
+
+.glow-1 { background: #ff69b4; top: 20%; left: 10%; }
+.glow-2 { background: #daa520; bottom: 20%; right: 10%; }
+.glow-3 { background: #9370db; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+@keyframes pulse {
+    50% { transform: scale(1.2); opacity: 0.5; }
+}
+
+/* Fireworks */
+canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .message { font-size: 1.3rem; }
+    .newyear { font-size: 2rem; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+<div class="glow glow-3"></div>
+
+<!-- Screen 1 -->
+<div class="screen active" id="screen1">
+    <div class="prompt-text">
+        Can you please record this and send it to me? 🎥<br>
+        (It's okay if you don't want po.)
+    </div>
+    <button class="button" onclick="goToScreen2()">OK</button>
+</div>
+
+<!-- Screen 2 -->
+<div class="screen" id="screen2">
+    <div class="prompt-text">Are you happy that you met me?</div>
+    <button class="button" onclick="goToMainMessage()">Yes</button>
+    <button class="button secondary" onclick="showJoke()">No</button>
+</div>
+
+<!-- Screen 3 -->
+<div class="screen" id="screen3">
+    <div class="prompt-text" style="color:#ffd700">
+        Ikaw ah, hindi ka pala masaya na nakilala mo ako HAHAHA 😂
+    </div>
+</div>
+
+<!-- Screen 4 -->
+<div class="screen" id="screen4">
+    <div class="message" id="typingMessage"></div>
+    <div class="newyear" id="newYearText">Happy New Year APUUU! ❤️</div>
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+/* Stars */
+const stars = document.getElementById("stars");
+for (let i = 0; i < 100; i++) {
+    const s = document.createElement("div");
+    s.className = "star";
+    s.style.left = Math.random() * 100 + "%";
+    s.style.top = Math.random() * 100 + "%";
+    stars.appendChild(s);
+}
+
+/* Navigation */
+function goToScreen2() {
+    screen1.classList.remove("active");
+    screen2.classList.add("active");
+}
+
+function showJoke() {
+    screen2.classList.remove("active");
+    screen3.classList.add("active");
+}
+
+function goToMainMessage() {
+    screen2.classList.remove("active");
+    screen3.classList.remove("active");
+    screen4.classList.add("active");
+    typeMessage();
+    startFireworks();
+}
+
+/* Typing Effect */
+const messageText = `I just want to say that I'm glad I met you, Mika.<br>
+Always take care of yourself, okay?<br>
+This will be my last message to you po.<br>
+pero tuloy pa din natin yung streak sa tiktok HAHA<br><br>
+Ps!: yung sinabi ko sayo ah. Dapat siya lang.`;
+
+let index = 0;
+let isTag = false;
+let output = "";
+const typingMessage = document.getElementById("typingMessage");
+const newYearText = document.getElementById("newYearText");
+
+function typeMessage() {
+    if (index < messageText.length) {
+        const char = messageText[index];
+        if (char === "<") isTag = true;
+        output += char;
+        if (char === ">") isTag = false;
+        typingMessage.innerHTML = output;
+        index++;
+        setTimeout(typeMessage, isTag ? 0 : 45);
+    } else {
+        newYearText.style.opacity = "1";
+        newYearText.style.animation = "fadeInScale 2s forwards";
+    }
+}
+
+/* Fireworks */
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+window.onresize = () => {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+};
+
+let particles = [];
+const colors = ["#ff69b4", "#ffd700", "#da70d6", "#ff6b9d"];
+
+function createFirework() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height * 0.6;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    for (let i = 0; i < 40; i++) {
+        particles.push({
+            x, y,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            alpha: 1,
+            color
+        });
+    }
+}
+
+function animate() {
+    ctx.fillStyle = "rgba(10,14,39,0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles = particles.filter(p => p.alpha > 0);
+    particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.02;
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+}
+
+function startFireworks() {
+    setTimeout(() => {
+        animate();
+        setInterval(createFirework, 900);
+    }, 6000);
+}
+</script>
+
+</body>
+</html>
